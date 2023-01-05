@@ -37,7 +37,7 @@
 - Create udev rule for this driver  
 
         sudo -i
-        echo 'KERNEL=="mydevice[0-9]*", GROUP="root", MODE="0666"' >>  /etc/udev/rules.d/81-my.rules
+        echo 'KERNEL=="irrecv[0-9]*", GROUP="root", MODE="0666"' >>  /etc/udev/rules.d/81-my.rules
         exit
 
 ## Install
@@ -62,6 +62,8 @@ This driver provides only two ioctl interface.
 
 | Command | Arguments | Description | Return value |
 | :-- | :-- | :-- | :-- |
-| 0 | pointer to the 32bit buffer | read received code | 0: successs<br>1: not received<br><0: error |
-| 1 | not used | clear and restart receiving | 0: success<br><0: error |
+| 0 | pointer to the 32bit buffer<br>If driver has received valid code, it will be copied to this buffer.<br>0x00000000 means 'not received', and 0xFFFFFFFF means 'repeat code received'. | Read received code.<br>After this command was executed, internal received data will be cleared and begin receiving the following code. | 0: successs<br>1: not received<br><0: error |
+| 1 | not used | Force clear internal data and restart receiving. | 0: success<br><0: error |
 
+Important notice  
+Once driver received valid IR code, the following IRR module's input signal will be ignoread and any code will be never received until clear data using read command or clear command. 
